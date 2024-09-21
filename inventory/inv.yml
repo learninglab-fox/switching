@@ -1,0 +1,29 @@
+---
+all:
+  children:
+    switches:
+      ios_switches:
+        hosts:
+          ios01:
+            ansible_host: 10.1.1.14
+        vars: ansible_network_os: cisco.ios.ios
+
+      nxos_switches:
+        hosts:
+          nxos01:
+            ansible_host: 10.1.1.13
+        vars: ansible_network_os: cisco.nxos.nxos
+
+      arista_switches:
+        hosts:
+          eos01:
+            ansible_host: 10.1.1.12
+        vars: ansible_network_os: arista.eos.eos
+    
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_user: admin
+    ansible_password: Foxnews1
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_host_key_checking: False
