@@ -1,0 +1,44 @@
+---
+
+### run with --check
+- name: username compliance
+  hosts: ios
+  #check_mode: yes
+  gather_facts: false
+  vars:
+    comp_file_loc: compliance-username.txt
+  
+
+
+  tasks:
+    - name: Get users
+      cisco.ios.ios_command:
+        commands:
+          - show run | i username
+      register: user_check
+
+    # - name: set fact
+    #   ansible.builtin.set_fact: 
+    #     users: "{{ user_check | regex_findall('(?:username) ([^\\s]+)') }}" 
+
+
+    - name: Print  
+      ansible.builtin.debug:
+        msg:
+          #- "Username Config is NOT compliant on -  "
+          #- "Currenty configured Users: {{ inventory_hostname  }} -  {{ users }} "
+          #- "{{ user_check.stdout_lines[0]
+          |-
+          {% for line in user_check.stdout_lines %}
+          {{ line }}
+          {% endfor %} }}"
+
+    # - name: Print 2
+    #   ansible.builtin.debug:
+    #     msg:
+    #       - "{{ users | unique }}"     
+
+    - name: build list of users
+      delegate_to: localhost
+      ansible.builtin.shell:
+            cmd: "echo '+ {{ inventory_hostname }} has the following usernames: {{ user_check.stdout_lines[0] | regex_findall('(?:username) ([^\\s]+)') | replace('[','') | replace(']','') }}'  >> {{ comp_file_loc }}"      

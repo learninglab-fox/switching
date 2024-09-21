@@ -1,0 +1,29 @@
+---
+
+### run with --check
+- name: username compliance
+  hosts: all
+  #check_mode: yes
+  gather_facts: false
+  vars:
+    comp_file_loc: compliance-username.txt
+  
+
+
+  tasks:
+
+    - name: Remove all users except admin
+      cisco.ios.ios_user:
+        aggregate:
+          - name: tvhoadmin
+          - name: ctgadmin
+        purge: true
+      when: ansible_network_os == 'ios'
+
+    - name: Remove all users except admin
+      cisco.nxos.nxos_user:
+        aggregate:
+          - name: tvhoadmin
+          - name: ctgadmin
+        purge: true
+      when: ansible_network_os == 'nxos'
