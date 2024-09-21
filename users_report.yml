@@ -2,43 +2,40 @@
 
 ### run with --check
 - name: username compliance
-  hosts: ios
+  hosts: all
   #check_mode: yes
   gather_facts: false
   vars:
-    comp_file_loc: compliance-username.txt
+    comp_file_loc: list-users.txt
+    
   
 
 
   tasks:
-    - name: Get users
+    - name: Get users IOS
       cisco.ios.ios_command:
         commands:
           - show run | i username
-      register: user_check
+      register: user_check_ios
+      when: ansible_network_os == 'cisco.ios.ios'
 
-    # - name: set fact
-    #   ansible.builtin.set_fact: 
-    #     users: "{{ user_check | regex_findall('(?:username) ([^\\s]+)') }}" 
+    - name: Get users NXOS
+      cisco.nxos.nxos_command:
+        commands:
+          - show run | i username
+      register: user_check_nxos
+      when: ansible_network_os == 'cisco.nxos.nxos'
 
+  
 
-    - name: Print  
-      ansible.builtin.debug:
-        msg:
-          #- "Username Config is NOT compliant on -  "
-          #- "Currenty configured Users: {{ inventory_hostname  }} -  {{ users }} "
-          #- "{{ user_check.stdout_lines[0]
-          |-
-          {% for line in user_check.stdout_lines %}
-          {{ line }}
-          {% endfor %} }}"
-
-    # - name: Print 2
-    #   ansible.builtin.debug:
-    #     msg:
-    #       - "{{ users | unique }}"     
-
-    - name: build list of users
+    - name: build list of users IOS
       delegate_to: localhost
       ansible.builtin.shell:
-            cmd: "echo '+ {{ inventory_hostname }} has the following usernames: {{ user_check.stdout_lines[0] | regex_findall('(?:username) ([^\\s]+)') | replace('[','') | replace(']','') }}'  >> {{ comp_file_loc }}"      
+            cmd: "echo '+ {{ inventory_hostname }} has the following usernames: {{ user_check_ios.stdout_lines[0] | regex_findall('(?:username) ([^\\s]+)') | replace('[','') | replace(']','') }}'  >> {{ comp_file_loc }}"      
+      when: ansible_network_os == 'cisco.ios.ios'
+
+    - name: build list of users NXOS
+      delegate_to: localhost
+      ansible.builtin.shell:
+            cmd: "echo '+ {{ inventory_hostname }} has the following usernames: {{ user_check_nxos.stdout_lines[0] | regex_findall('(?:username) ([^\\s]+)') | replace('[','') | replace(']','') }}'  >> {{ comp_file_loc }}"  
+      when: ansible_network_os == 'cisco.nxos.nxos'

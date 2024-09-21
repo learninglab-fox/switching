@@ -7,13 +7,15 @@ all:
           hosts:
             ios01:
               ansible_host: 10.1.1.14
-              ansible_network_os: cisco.ios.ios
+        vars:  
+          ansible_network_os: cisco.ios.ios
 
         nxos_switches:
           hosts:
             nxos01:
               ansible_host: 10.1.1.13
-              ansible_network_os: cisco.nxos.nxos
+        vars:
+          ansible_network_os: cisco.nxos.nxos
 
         arista_switches:
           hosts:

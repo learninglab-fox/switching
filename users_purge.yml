@@ -5,9 +5,6 @@
   hosts: all
   #check_mode: yes
   gather_facts: false
-  vars:
-    comp_file_loc: compliance-username.txt
-  
 
 
   tasks:
@@ -15,15 +12,13 @@
     - name: Remove all users except admin
       cisco.ios.ios_user:
         aggregate:
-          - name: tvhoadmin
-          - name: ctgadmin
+          - name: maruf
         purge: true
-      when: ansible_network_os == 'ios'
+      when: ansible_network_os == 'cisco.ios.ios'
 
     - name: Remove all users except admin
       cisco.nxos.nxos_user:
         aggregate:
-          - name: tvhoadmin
-          - name: ctgadmin
+          - name: maruf
         purge: true
-      when: ansible_network_os == 'nxos'
+      when: ansible_network_os == 'cisco.nxos.nxos'
