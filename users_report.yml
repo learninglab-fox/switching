@@ -26,7 +26,12 @@
       register: user_check_nxos
       when: ansible_network_os == 'cisco.nxos.nxos'
 
-  
+    - name: Get users ARISTA
+      arista.eos.eos_command:
+        commands:
+          - show run | i username
+      register: user_check_arista
+      when: ansible_network_os == 'arista.eos.eos'
 
     - name: build list of users IOS
       delegate_to: localhost
@@ -39,3 +44,14 @@
       ansible.builtin.shell:
             cmd: "echo '+ {{ inventory_hostname }} has the following usernames: {{ user_check_nxos.stdout_lines[0] | regex_findall('(?:username) ([^\\s]+)') | replace('[','') | replace(']','') }}'  >> {{ comp_file_loc }}"  
       when: ansible_network_os == 'cisco.nxos.nxos'
+
+    - name: build list of users ARISTA
+      delegate_to: localhost
+      ansible.builtin.shell:
+            cmd: "echo '+ {{ inventory_hostname }} has the following usernames: {{ user_check_arista.stdout_lines[0] | regex_findall('(?:username) ([^\\s]+)') | replace('[','') | replace(']','') }}'  >> {{ comp_file_loc }}"  
+      when: ansible_network_os == 'arista.eos.eos'
+
+
+
+
+
