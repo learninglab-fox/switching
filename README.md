@@ -1,2 +1,2 @@
-# switiching
+# switching
 Dedicated to learning
