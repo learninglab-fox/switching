@@ -22,3 +22,7 @@
           - name: maruf
         purge: true
       when: ansible_network_os == 'cisco.nxos.nxos'
+
+    - name: Remove all users except admin
+      arista.eos.eos_user:
+        purge: true
